@@ -43,9 +43,9 @@ abstract class CommonJoinOperator[T <: JoinDesc] extends NaryOperator[T] with Jo
   @transient
   var tagLen: Int = _
   @transient
-  var joinVals: Array[JavaList[ExprNodeEvaluator]] = _
+  var joinVals: Array[JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]] = _
   @transient
-  var joinFilters: Array[JavaList[ExprNodeEvaluator]] = _
+  var joinFilters: Array[JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]] = _
   @transient
   var joinValuesObjectInspectors: Array[JavaList[ObjectInspector]] = _
   @transient
@@ -55,13 +55,13 @@ abstract class CommonJoinOperator[T <: JoinDesc] extends NaryOperator[T] with Jo
 
   @transient var noOuterJoin: Boolean = _
   @transient var filterMap: Array[Array[Int]] = _
-  
+
   @transient var rowBuffer: Array[AnyRef] = _
 
   override def initializeOnMaster() {
     super.initializeOnMaster()
     conf = desc
-    
+
     order = conf.getTagOrder()
     joinConditions = conf.getConds()
     numTables = parentOperators.size
@@ -77,11 +77,11 @@ abstract class CommonJoinOperator[T <: JoinDesc] extends NaryOperator[T] with Jo
 
     tagLen = conf.getTagLength()
 
-    joinVals = new Array[JavaList[ExprNodeEvaluator]](tagLen)
+    joinVals = new Array[JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]](tagLen)
     HiveJoinUtil.populateJoinKeyValue(
       joinVals, conf.getExprs(), order, CommonJoinOperator.NOTSKIPBIGTABLE)
 
-    joinFilters = new Array[JavaList[ExprNodeEvaluator]](tagLen)
+    joinFilters = new Array[JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]](tagLen)
     HiveJoinUtil.populateJoinKeyValue(
       joinFilters, conf.getFilters(), order, CommonJoinOperator.NOTSKIPBIGTABLE)
 

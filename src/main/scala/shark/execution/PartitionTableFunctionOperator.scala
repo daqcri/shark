@@ -122,43 +122,7 @@ class PartitionTableFunctionOperator extends UnaryOperator[PTFDesc] {
     ptfPartition
   }
 
-  def executeWindowExprs(oPart: PTFPartition): PTFPartition = {
-    val wTFnDef: WindowTableFunctionDef = conf.getFuncDef.asInstanceOf[WindowTableFunctionDef]
-    val inputOI = wTFnDef.getOutputFromWdwFnProcessing().getOI
-    val outputOI = wTFnDef.getOutputShape().getOI
-    val numCols = outputOI.getAllStructFieldRefs().size
-    val wdwExprs = wTFnDef.getWindowExpressions
-    val numWdwExprs = if (wdwExprs == null) 0 else wdwExprs.size
-    val output = new Array[Object](numCols)
-
-    val forwardRowsUntouched = (wdwExprs == null || wdwExprs.size() == 0)
-    if (forwardRowsUntouched) {
-      return oPart
-    }
-
-    val pItr = oPart.iterator
-    val newPartition = createFirstPartitionForChain(objectInspector, conf.isMapSide)
-    PTFOperator.connectLeadLagFunctionsToPartition(conf, pItr)
-    pItr.foreach{ oRow =>
-      var colCnt = 0
-
-      if (wdwExprs != null) {
-        wdwExprs.foreach { e =>
-          output(colCnt) = e.getExprEvaluator.evaluate(oRow)
-          colCnt = colCnt + 1
-        }
-      }
-
-      for (colCnt <- 0 to numCols) {
-        val field = inputOI.getAllStructFieldRefs().get(colCnt - numWdwExprs)
-        output(colCnt) = ObjectInspectorUtils.copyToStandardObject(
-          inputOI.getStructFieldData(oRow, field), field.getFieldObjectInspector())
-      }
-      newPartition.append(output)
-    }
-    newPartition
-  }
-
+  def executeWindowExprs(oPart: PTFPartition): PTFPartition = ???
   def processMapFunction(): PTFPartition = {
     conf.getStartOfChain.getTFunction.transformRawInput(inputPart)
   }
@@ -167,7 +131,7 @@ class PartitionTableFunctionOperator extends UnaryOperator[PTFDesc] {
     val pDef: PartitionDef = conf.getStartOfChain().getPartition
     val exprs: ArrayList[PTFExpressionDef] = pDef.getExpressions
     val numExprs = exprs.size
-    val keyFields = new Array[ExprNodeEvaluator](numExprs)
+    val keyFields = new Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]](numExprs)
     val keyOIs = new Array[ObjectInspector](numExprs)
     val currentKeyOIs = new Array[ObjectInspector](numExprs)
 
@@ -192,16 +156,15 @@ class PartitionTableFunctionOperator extends UnaryOperator[PTFDesc] {
   def createFirstPartitionForChain(oi: ObjectInspector, isMapSide: Boolean): PTFPartition = {
     val tabDef: PartitionedTableFunctionDef = conf.getStartOfChain
     val tEval: TableFunctionEvaluator = tabDef.getTFunction
-    val partClassName: String = tEval.getPartitionClass
-    val partMemSize = tEval.getPartitionMemSize
+    val partClassName: String = ???
+    val partMemSize: Int = ???
 
     val serde: SerDe = if (isMapSide) {
       tabDef.getInput().getOutputShape().getSerde()
     } else {
       tabDef.getRawInputShape().getSerde
     }
-    val part: PTFPartition = new PTFPartition(partClassName, partMemSize, serde,
-      oi.asInstanceOf[StructObjectInspector])
+    val part: PTFPartition = null
     part
   }
 
@@ -258,7 +221,7 @@ class PartitionTableFunctionOperator extends UnaryOperator[PTFDesc] {
         var partition: PTFPartition = null
         val row = iter.next().asInstanceOf[Any]
         if (!conf.isMapSide) {
-          newKeys.getNewKey(row, inputPart.getOI)
+          newKeys.getNewKey(row, null)
           val keysAreEqual = if (currentKeys != null && newKeys != null) {
             newKeys.equals(currentKeys)
           } else {

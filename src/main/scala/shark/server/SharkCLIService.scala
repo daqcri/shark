@@ -30,8 +30,6 @@ class SharkCLIService extends CLIService {
           throw new ServiceException("Unable to login to kerberos with given principal/keytab", e)
         }
       }
-      // Make sure the ThreadLocal SparkEnv reference is the same for all threads.
-      SparkEnv.set(SharkServer.sparkEnv)
       sharkInit(hiveConf)
     }
   }

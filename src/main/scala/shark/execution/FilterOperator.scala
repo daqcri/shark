@@ -28,7 +28,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector
 
 class FilterOperator extends UnaryOperator[FilterDesc] {
 
-  @transient var conditionEvaluator: ExprNodeEvaluator = _
+  @transient var conditionEvaluator: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] = _
   @transient var conditionInspector: PrimitiveObjectInspector = _
 
   @BeanProperty var conf: FilterDesc = _

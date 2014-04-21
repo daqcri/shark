@@ -56,11 +56,11 @@ class GroupByPreShuffleOperator extends UnaryOperator[GroupByDesc] {
   @transient var aggregationObjectInspectors: Array[ObjectInspector] = _
 
   // Key fields to be grouped.
-  @transient var keyFields: Array[ExprNodeEvaluator] = _
+  @transient var keyFields: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
   // A struct object inspector composing of all the fields.
   @transient var keyObjectInspector: StructObjectInspector = _
 
-  @transient var aggregationParameterFields: Array[Array[ExprNodeEvaluator]] = _
+  @transient var aggregationParameterFields: Array[Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]] = _
   @transient var aggregationParameterObjectInspectors: Array[Array[ObjectInspector]] = _
   @transient var aggregationParameterStandardObjectInspectors: Array[Array[ObjectInspector]] = _
 
@@ -130,7 +130,7 @@ class GroupByPreShuffleOperator extends UnaryOperator[GroupByDesc] {
       cloneNewKeysArray = new Array[Object](groupingSets.size)
 
       groupingSets.zipWithIndex.foreach { case(groupingSet, i) =>
-        val groupingSetValueEvaluator: ExprNodeEvaluator =
+        val groupingSetValueEvaluator: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] =
           ExprNodeEvaluatorFactory.get(new ExprNodeConstantDesc(String.valueOf(groupingSet)));
 
         newKeysGroupingSets(i) = groupingSetValueEvaluator.evaluate(null)

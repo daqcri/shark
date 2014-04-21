@@ -12,7 +12,7 @@ class SharkSQLOperation(
     parentSession: HiveSession,
     statement: String,
     confOverlay: JMap[String, String])
-  extends SQLOperation(parentSession, statement, confOverlay) {
+  extends SQLOperation(parentSession, statement, confOverlay, false) {
 
   private val sdriver = {
     val d = new SharkDriver(getParentSession.getHiveConf)

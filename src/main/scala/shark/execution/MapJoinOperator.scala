@@ -52,11 +52,11 @@ class MapJoinOperator extends CommonJoinOperator[MapJoinDesc] {
   @BeanProperty var bigTableAlias: Int = _
   @BeanProperty var bigTableAliasByte: java.lang.Byte = _
 
-  @transient var joinKeys: Array[JList[ExprNodeEvaluator]] = _
+  @transient var joinKeys: Array[JList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]] = _
   @transient var joinKeysObjectInspectors: Array[JList[ObjectInspector]] = _
 
   @transient val metadataKeyTag = -1
-  @transient var joinValues: Array[JList[ExprNodeEvaluator]] = _
+  @transient var joinValues: Array[JList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]] = _
 
   override def initializeOnMaster() {
     super.initializeOnMaster()
@@ -75,7 +75,7 @@ class MapJoinOperator extends CommonJoinOperator[MapJoinDesc] {
     super.initializeOnSlave()
 
     tagLen = conf.getTagLength()
-    joinKeys = new Array[JList[ExprNodeEvaluator]](tagLen)
+    joinKeys = new Array[JList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]](tagLen)
     HiveJoinUtil.populateJoinKeyValue(
       joinKeys, conf.getKeys(), order, CommonJoinOperator.NOTSKIPBIGTABLE)
 

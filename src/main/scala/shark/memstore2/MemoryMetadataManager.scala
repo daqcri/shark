@@ -163,7 +163,7 @@ class MemoryMetadataManager extends LogHelper {
       databaseName: String,
       tableName: String) {
     getTable(databaseName, tableName).foreach { sharkTable =>
-      db.setCurrentDatabase(databaseName)
+      //db.setCurrentDatabase(databaseName)
       val hiveTable = db.getTable(databaseName, tableName)
       // Refresh the Hive `db`.
       db.alterTable(tableName, hiveTable)

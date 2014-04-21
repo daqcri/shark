@@ -29,15 +29,13 @@ import sbtassembly.Plugin.AssemblyKeys._
 object SharkBuild extends Build {
 
   // Shark version
-  val SHARK_VERSION = "0.9.1-SNAPSHOT"
+  val SHARK_VERSION = "1.0.0-SNAPSHOT"
 
   val SHARK_ORGANIZATION = "edu.berkeley.cs.shark"
 
-  val HIVE_VERSION = "0.11.0-shark-0.9.1-SNAPSHOT"
-
   val SPARK_VERSION = "1.0.0-SNAPSHOT"
 
-  val SCALA_VERSION = "2.10.3"
+  val SCALA_VERSION = "2.10.4"
 
   val SCALAC_JVM_VERSION = "jvm-1.6"
   val JAVAC_JVM_VERSION = "1.6"
@@ -81,7 +79,6 @@ object SharkBuild extends Build {
   //               all of our settings. Should be done for v0.9.1. Also, we might not need some
   //               of these jars.
   val hiveArtifacts = Seq(
-    "hive-anttasks",
     "hive-beeline",
     "hive-cli",
     "hive-common",
@@ -94,7 +91,7 @@ object SharkBuild extends Build {
     "hive-service",
     "hive-shims")
   val hiveDependencies = hiveArtifacts.map ( artifactId =>
-    SHARK_ORGANIZATION % artifactId % HIVE_VERSION excludeAll(
+    "org.apache.hive" % artifactId % "0.12.0" excludeAll(
       excludeGuava, excludeLog4j, excludeServlet, excludeAsm, excludeNetty, excludeXerces)
   )
 
@@ -144,7 +141,7 @@ object SharkBuild extends Build {
     useGpg in Global := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { _ => false },
-    pomExtra := (
+    pomExtra :=
       <url>http://shark.cs.berkeley.edu</url>
       <licenses>
         <license>
@@ -166,8 +163,7 @@ object SharkBuild extends Build {
           <organization>U.C. Berkeley Computer Science</organization>
           <organizationUrl>http://www.cs.berkeley.edu</organizationUrl>
         </developer>
-      </developers>
-    ),
+      </developers>,
 
     fork := true,
     javaOptions += "-XX:MaxPermSize=512m",
@@ -187,12 +183,9 @@ object SharkBuild extends Build {
       }
     },
 
-    unmanagedJars in Test ++= Seq(
-      file(System.getenv("HIVE_DEV_HOME")) / "build" / "ql" / "test" / "classes"
-    ),
     libraryDependencies ++= hiveDependencies ++ tachyonDependency ++ yarnDependency,
     libraryDependencies ++= Seq(
-      "org.apache.spark" %% "spark-core" % SPARK_VERSION,
+      "org.apache.spark" %% "spark-hive" % SPARK_VERSION,
       "org.apache.spark" %% "spark-repl" % SPARK_VERSION,
       "com.google.guava" % "guava" % "14.0.1",
       "org.apache.hadoop" % "hadoop-client" % hadoopVersion excludeAll(excludeJackson, excludeNetty, excludeAsm) force(),

@@ -62,16 +62,6 @@ if [ -f "${HIVE_CONF_DIR}/hive-env.sh" ]; then
   . "${HIVE_CONF_DIR}/hive-env.sh"
 fi
 
-# Add Shark jars.
-for jar in `find $SHARK_HOME/lib -name '*jar'`; do
-  SPARK_CLASSPATH+=:$jar
-done
-for jar in `find $SHARK_HOME/lib_managed/jars -name '*jar'`; do
-  SPARK_CLASSPATH+=:$jar
-done
-for jar in `find $SHARK_HOME/lib_managed/bundles -name '*jar'`; do
-  SPARK_CLASSPATH+=:$jar
-done
 
 SPARK_CLASSPATH+=:$HIVE_CONF_DIR
 
@@ -89,6 +79,17 @@ else
     exit 1
   fi
 fi
+
+# Add Shark jars.
+for jar in `find $SHARK_HOME/lib -name '*jar'`; do
+  SPARK_CLASSPATH+=:$jar
+done
+for jar in `find $SHARK_HOME/lib_managed/jars -name '*jar'`; do
+  SPARK_CLASSPATH+=:$jar
+done
+for jar in `find $SHARK_HOME/lib_managed/bundles -name '*jar'`; do
+  SPARK_CLASSPATH+=:$jar
+done
 
 SPARK_CLASSPATH+=":$SHARK_HOME/target/scala-$SCALA_VERSION/test-classes"
 
@@ -115,7 +116,7 @@ fi
 #CLASSPATH=${CLASSPATH}:${AUX_CLASSPATH}
 
 export SPARK_CLASSPATH
-export CLASSPATH+=$SPARK_CLASSPATH # Needed for spark-shell
+export CLASSPATH=$SPARK_CLASSPATH:$CLASSPATH # Needed for spark-shell
 
 export SPARK_JAVA_OPTS+=" $TEST_JAVA_OPTS"
 
@@ -147,5 +148,7 @@ if [ "x$RUNNER" == "x" ] ; then
   # The JVM doesn't read JAVA_OPTS by default so we need to pass it in
   EXTRA_ARGS="$JAVA_OPTS"
 fi
+
+echo $CLASSPATH
 
 exec $RUNNER $EXTRA_ARGS "$@"

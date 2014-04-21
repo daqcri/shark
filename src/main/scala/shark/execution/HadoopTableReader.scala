@@ -183,9 +183,7 @@ class HadoopTableReader(@transient _tableDesc: TableDesc, @transient _localHConf
         partSerDe.initialize(hconf, partProps)
         tableSerDe.initialize(hconf, tableProps)
 
-        val tblConvertedOI = ObjectInspectorConverters.getConvertedOI(
-          partSerDe.getObjectInspector(), tableSerDe.getObjectInspector())
-          .asInstanceOf[StructObjectInspector]
+        val tblConvertedOI: StructObjectInspector = null
         val partTblObjectInspectorConverter = ObjectInspectorConverters.getConverter(
           partSerDe.getObjectInspector(), tblConvertedOI)
         val rowWithPartArr = new Array[Object](2)

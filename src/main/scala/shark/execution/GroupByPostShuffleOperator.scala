@@ -63,7 +63,7 @@ class GroupByPostShuffleOperator extends GroupByPreShuffleOperator
   @transient val nonDistinctAggrs = new JArrayList[Int]()
   @transient val distinctKeyWrapperFactories = new JHashMap[Int, JArrayList[KeyWrapperFactory]]()
   @transient val distinctHashSets = new JHashMap[Int, JArrayList[JHashSet[KeyWrapper]]]()
-  @transient var unionExprEvaluator: ExprNodeEvaluator = _
+  @transient var unionExprEvaluator: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] = _
 
   override def createLocals() {
     super.createLocals()
@@ -113,9 +113,9 @@ class GroupByPostShuffleOperator extends GroupByPreShuffleOperator
     }
   }
 
-  private def initializeUnionExprEvaluator(rowInspector: ObjectInspector): ExprNodeEvaluator = {
+  private def initializeUnionExprEvaluator(rowInspector: ObjectInspector): ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] = {
     val sfs = rowInspector.asInstanceOf[StructObjectInspector].getAllStructFieldRefs
-    var unionExprEval: ExprNodeEvaluator = null
+    var unionExprEval: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] = null
     if (sfs.size > 0) {
       val keyField = sfs.get(0)
       if (keyField.getFieldName.toUpperCase.equals(Utilities.ReduceField.KEY.name)) {

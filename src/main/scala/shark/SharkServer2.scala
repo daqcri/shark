@@ -4,15 +4,24 @@ import org.apache.commons.logging.LogFactory
 import org.apache.hadoop.hive.common.LogUtils
 import org.apache.hadoop.hive.common.LogUtils.LogInitializationException
 import org.apache.hadoop.hive.conf.HiveConf
-import org.apache.hive.service.cli.thrift.ThriftCLIService
+import org.apache.hive.service.cli.thrift.ThriftBinaryCLIService
 import org.apache.hive.service.server.{HiveServer2, ServerOptionsProcessor}
+import org.apache.hive.service.CompositeService
 import org.apache.spark.SparkEnv
 import shark.server.SharkCLIService
 
+import scala.collection.JavaConversions._
+
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.hive.HiveContext
+
 object SharkServer2 extends LogHelper {
-  SharkEnv.init()
-  var sparkEnv: SparkEnv = SparkEnv.get
   var LOG = LogFactory.getLog(classOf[SharkServer2])
+
+  val sparkContext = new SparkContext("local", "")
+  val hiveContext = new HiveContext(sparkContext)
+
+  server.SharkServer.hiveContext = hiveContext
 
   def main(args: Array[String]) {
     try {
@@ -41,6 +50,7 @@ object SharkServer2 extends LogHelper {
   try {
     val hiveConf = new HiveConf
     SharkConfVars.initializeWithDefaults(hiveConf)
+
     val server = new SharkServer2
     server.init(hiveConf)
     server.start()
@@ -54,16 +64,14 @@ object SharkServer2 extends LogHelper {
 }
 
 class SharkServer2 extends HiveServer2 {
-  override def init(hiveConf: HiveConf) {
-    this.synchronized {
-      val sharkCLIService = new SharkCLIService
-      Utils.setSuperField("cliService", sharkCLIService, this)
-      addService(sharkCLIService)
-      val sthriftCLIService = new ThriftCLIService(sharkCLIService)
-      Utils.setSuperField("thriftCLIService", sthriftCLIService, this)
-      addService(sthriftCLIService)
-      sharkInit(hiveConf)
-    }
+  override def init(hiveConf: HiveConf): Unit = synchronized {
+    val sharkCLIService = new SharkCLIService
+    Utils.setSuperField("cliService", sharkCLIService, this)
+    addService(sharkCLIService)
+    val sthriftCLIService = new ThriftBinaryCLIService(sharkCLIService)
+    Utils.setSuperField("thriftCLIService", sthriftCLIService, this)
+    addService(sthriftCLIService)
+    sharkInit(hiveConf)
   }
 }
 

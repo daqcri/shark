@@ -23,8 +23,6 @@ import com.esotericsoftware.kryo.{Kryo, Serializer => KSerializer}
 import com.esotericsoftware.kryo.io.{Input => KryoInput, Output => KryoOutput}
 import com.esotericsoftware.kryo.serializers.{JavaSerializer => KryoJavaSerializer}
 import org.apache.hadoop.io.Writable
-import org.apache.hadoop.hive.ql.exec.persistence.{MapJoinSingleKey, MapJoinObjectKey,
-    MapJoinDoubleKeys, MapJoinObjectValue}
 import org.apache.spark.serializer.{KryoRegistrator => SparkKryoRegistrator}
 import shark.execution.serialization.SerializableWritable
 
@@ -34,11 +32,6 @@ class KryoRegistrator extends SparkKryoRegistrator {
 
     kryo.register(classOf[execution.ReduceKey])
 
-    // The map join data structures are Java serializable.
-    kryo.register(classOf[MapJoinSingleKey], new KryoJavaSerializer)
-    kryo.register(classOf[MapJoinObjectKey], new KryoJavaSerializer)
-    kryo.register(classOf[MapJoinDoubleKeys], new KryoJavaSerializer)
-    kryo.register(classOf[MapJoinObjectValue], new KryoJavaSerializer)
 
     kryo.register(classOf[SerializableWritable[_]], new KryoSWSerializer)
 

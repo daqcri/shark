@@ -51,8 +51,8 @@ class LateralViewJoinOperator extends NaryOperator[LateralViewJoinDesc] {
   @BeanProperty var udtfSelOIString: String = _
   @BeanProperty var lvjSelOIString: String = _
 
-  @transient var udtfEval: Array[ExprNodeEvaluator] = _
-  @transient var lvjSelEval: Array[ExprNodeEvaluator] = _
+  @transient var udtfEval: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
+  @transient var lvjSelEval: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
 
   override def initializeOnMaster() {
     super.initializeOnMaster()

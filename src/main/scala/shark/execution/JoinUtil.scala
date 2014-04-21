@@ -34,7 +34,7 @@ import shark.execution.serialization.SerializableWritable
 
 object JoinUtil {
 
-  def computeJoinKey(row: Any, keyFields: JavaList[ExprNodeEvaluator], keyFieldsOI: JavaList[OI])
+  def computeJoinKey(row: Any, keyFields: JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]], keyFieldsOI: JavaList[OI])
   : Seq[SerializableWritable[_]] = {
     Range(0, keyFields.size).map { i =>
       val c = copy(row, keyFields.get(i), keyFieldsOI.get(i), CopyOption.WRITABLE)
@@ -50,9 +50,9 @@ object JoinUtil {
   }
 
   def computeJoinValues(row: Any,
-      valueFields: JavaList[ExprNodeEvaluator],
+      valueFields: JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]],
       valueFieldsOI: JavaList[OI],
-      filters: JavaList[ExprNodeEvaluator],
+      filters: JavaList[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]],
       filtersOI: JavaList[OI],
       noOuterJoin: Boolean,
       serializable: Boolean = false)
@@ -102,7 +102,7 @@ object JoinUtil {
     }
   }
 
-  private def copy(row: Any, evaluator: ExprNodeEvaluator, oi: OI, copyOption: CopyOption) = {
+  private def copy(row: Any, evaluator: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc], oi: OI, copyOption: CopyOption) = {
     OIUtils.copyToStandardObject(evaluator.evaluate(row), oi, copyOption)
   }
 }

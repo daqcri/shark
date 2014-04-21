@@ -44,7 +44,7 @@ object MapSplitPruning {
    *
    * s and s.stats must not be null here.
    */
-  def test(s: TablePartitionStats, e: ExprNodeEvaluator): Boolean = {
+  def test(s: TablePartitionStats, e: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]): Boolean = {
     if (s.numRows == 0) {
       // If the partition is empty, it can be pruned.
       false
@@ -85,7 +85,7 @@ object MapSplitPruning {
   def testInPredicate(
     s: TablePartitionStats,
     columnEval: ExprNodeColumnEvaluator,
-    expEvals: Array[ExprNodeEvaluator]): Boolean = {
+    expEvals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]]): Boolean = {
 
     val field = getIDStructField(columnEval.field)
     val columnStats = s.stats(field.fieldID)
@@ -132,8 +132,8 @@ object MapSplitPruning {
   def testComparisonPredicate(
     s: TablePartitionStats,
     udf: GenericUDFBaseCompare,
-    left: ExprNodeEvaluator,
-    right: ExprNodeEvaluator): Boolean = {
+    left: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc],
+    right: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]): Boolean = {
 
     // Try to get the column evaluator.
     val columnEval: ExprNodeColumnEvaluator =

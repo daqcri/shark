@@ -97,7 +97,7 @@ public class ExplainTaskHelper {
 
     // We look at all methods that generate values for explain
     Method[] methods = work.getClass().getMethods();
-    Arrays.sort(methods, new MethodComparator());
+    //Arrays.sort(methods, new MethodComparator());
 
     for (Method m : methods) {
       int prop_indents = indent + 2;

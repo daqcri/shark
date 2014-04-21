@@ -145,7 +145,7 @@ abstract class Operator[+T <: HiveDesc] extends LogHelper with Serializable {
    * {@link Operator#initEvaluatorsAndReturnStruct(ExprNodeEvaluator[], List, ObjectInspector)}
    */
   protected def initEvaluatorsAndReturnStruct(
-      evals: Array[ExprNodeEvaluator] , distinctColIndices: JavaList[JavaList[Integer]] ,
+      evals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] , distinctColIndices: JavaList[JavaList[Integer]] ,
       outputColNames: JavaList[String], length: Int, rowInspector: ObjectInspector): 
       StructObjectInspector = {
 
@@ -165,7 +165,7 @@ abstract class Operator[+T <: HiveDesc] extends LogHelper with Serializable {
    * {@link Operator#initEvaluatorsAndReturnStruct(ExprNodeEvaluator[], List, ObjectInspector)}
    */
   protected def initEvaluatorsAndReturnStruct(
-      evals: Array[ExprNodeEvaluator], fieldObjectInspectors: Array[ObjectInspector], 
+      evals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]], fieldObjectInspectors: Array[ObjectInspector],
       distinctColIndices: JavaList[JavaList[Integer]], outputColNames: JavaList[String], 
       length: Int, rowInspector: ObjectInspector): StructObjectInspector = {
 
@@ -201,7 +201,7 @@ abstract class Operator[+T <: HiveDesc] extends LogHelper with Serializable {
    * Initialize an array of ExprNodeEvaluator and return the result
    * ObjectInspectors.
    */
-  protected def initEvaluators(evals: Array[ExprNodeEvaluator],
+  protected def initEvaluators(evals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]],
       rowInspector: ObjectInspector): Array[ObjectInspector] = {
     val result = new Array[ObjectInspector](evals.length)
     for (i <- 0 to evals.length -1) {
@@ -215,7 +215,7 @@ abstract class Operator[+T <: HiveDesc] extends LogHelper with Serializable {
    * Initialize an array of ExprNodeEvaluator from start, for specified length
    * and return the result ObjectInspectors.
    */
-  protected def initEvaluators(evals: Array[ExprNodeEvaluator],
+  protected def initEvaluators(evals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]],
       start: Int, length: Int,rowInspector: ObjectInspector): Array[ObjectInspector] = {
     val result = new Array[ObjectInspector](length)
     
@@ -231,7 +231,7 @@ abstract class Operator[+T <: HiveDesc] extends LogHelper with Serializable {
    * StructObjectInspector with integer field names.
    */
   protected def initEvaluatorsAndReturnStruct(
-      evals: Array[ExprNodeEvaluator], outputColName: JavaList[String],
+      evals: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]], outputColName: JavaList[String],
       rowInspector: ObjectInspector): StructObjectInspector = {
     val fieldObjectInspectors = initEvaluators(evals, rowInspector)
     return ObjectInspectorFactory.getStandardStructObjectInspector(

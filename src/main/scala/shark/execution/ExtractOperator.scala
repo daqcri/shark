@@ -36,7 +36,7 @@ class ExtractOperator extends UnaryOperator[ExtractDesc]
   @BeanProperty var valueTableDesc: TableDesc = _
   @BeanProperty var localHconf: HiveConf = _
 
-  @transient var eval: ExprNodeEvaluator = _
+  @transient var eval: ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc] = _
   @transient var valueDeser: Deserializer = _
 
   override def initializeOnMaster() {

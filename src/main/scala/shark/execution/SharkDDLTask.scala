@@ -88,7 +88,7 @@ private[shark] class SharkDDLTask extends HiveTask[SharkDDLWork]
       hiveMetadataDb: Hive,
       createTblDesc: CreateTableDesc,
       cacheMode: CacheType.CacheType) {
-    val dbName = hiveMetadataDb.getCurrentDatabase
+    val dbName = ""
     val tableName = createTblDesc.getTableName
     val tblProps = createTblDesc.getTblProps
 
@@ -122,7 +122,7 @@ private[shark] class SharkDDLTask extends HiveTask[SharkDDLWork]
       hiveMetadataDb: Hive,
       addPartitionDesc: AddPartitionDesc,
       cacheMode: CacheType.CacheType) {
-    val dbName = hiveMetadataDb.getCurrentDatabase()
+    val dbName = ""
     val tableName = addPartitionDesc.getTableName
 
     // Find the set of partition column values that specifies the partition being added.
@@ -152,7 +152,7 @@ private[shark] class SharkDDLTask extends HiveTask[SharkDDLWork]
       hiveMetadataDb: Hive,
       dropTableDesc: DropTableDesc,
       cacheMode: CacheType.CacheType) {
-    val dbName = hiveMetadataDb.getCurrentDatabase()
+    val dbName = ""
     val tableName = dropTableDesc.getTableName
     val hiveTable = db.getTable(tableName, false /* throwException */);
     val partSpecs: JavaList[PartitionSpec] = dropTableDesc.getPartSpecs
@@ -195,7 +195,7 @@ private[shark] class SharkDDLTask extends HiveTask[SharkDDLWork]
       hiveMetadataDb: Hive,
       alterTableDesc: AlterTableDesc,
       cacheMode: CacheType.CacheType) {
-    val dbName = hiveMetadataDb.getCurrentDatabase()
+    val dbName = ""
     alterTableDesc.getOp() match {
       case AlterTableDesc.AlterTableTypes.RENAME => {
         val oldName = alterTableDesc.getOldName
@@ -232,6 +232,6 @@ private[shark] class SharkDDLTask extends HiveTask[SharkDDLWork]
 
   override def getName = "DDL-SPARK"
 
-  override def localizeMRTmpFilesImpl(ctx: Context) = Unit
+  def localizeMRTmpFilesImpl(ctx: Context) = Unit
 
 }

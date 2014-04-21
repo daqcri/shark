@@ -43,16 +43,16 @@ class ReduceSinkOperator extends UnaryOperator[ReduceSinkDesc] {
 
   // The evaluator for key columns. Key columns decide the sort/hash order on
   // the reducer side. Key columns are passed to the reducer in the "key".
-  @transient var keyEval: Array[ExprNodeEvaluator] = _
+  @transient var keyEval: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
 
   // The evaluator for the value columns. Value columns are passed to reducers
   // in the "value".
-  @transient var valueEval: Array[ExprNodeEvaluator] = _
+  @transient var valueEval: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
 
   // The evaluator for the partition columns (used in CLUSTER BY and
   // DISTRIBUTE BY in Hive). Partition columns decide the reducer that the
   // current row goes to. Partition columns are not passed to reducers.
-  @transient var partitionEval: Array[ExprNodeEvaluator] = _
+  @transient var partitionEval: Array[ExprNodeEvaluator[_ <: org.apache.hadoop.hive.ql.plan.ExprNodeDesc]] = _
 
   @transient var keySer: SerDe = _
   @transient var valueSer: SerDe = _

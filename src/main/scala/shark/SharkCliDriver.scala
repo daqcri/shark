@@ -47,6 +47,8 @@ import org.apache.thrift.transport.TSocket
 
 
 import shark.memstore2.TableRecovery
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.hive.HiveContext
 
 object SharkCliDriver {
   val SKIP_RDD_RELOAD_FLAG = "-skipRddReload"
@@ -264,17 +266,16 @@ class SharkCliDriver(reloadRdds: Boolean = true) extends CliDriver with LogHelpe
 
   SharkConfVars.initializeWithDefaults(conf)
 
+  var sparkContext: SparkContext = _
+  var hiveContext: HiveContext = _
+
   // Force initializing SharkEnv. This is put here but not object SharkCliDriver
   // because the Hive unit tests do not go through the main() code path.
   if (!ss.isRemoteMode()) {
-    SharkEnv.init()
-    if (reloadRdds) {
-      console.printInfo(
-        "Reloading cached RDDs from previous Shark sessions... (use %s flag to skip reloading)"
-        .format(SharkCliDriver.SKIP_RDD_RELOAD_FLAG))
-      TableRecovery.reloadRdds(processCmd(_), Some(console))
-    }
+    sparkContext = new SparkContext("local", "")
+    hiveContext = new org.apache.spark.sql.hive.HiveContext(sparkContext)
   }
+
 
   def this() = this(false)
 
@@ -296,6 +297,11 @@ class SharkCliDriver(reloadRdds: Boolean = true) extends CliDriver with LogHelpe
       val timeTaken: Double = (end - start) / 1000.0
       console.printInfo("Time taken (including network latency): " + timeTaken + " seconds")
     } else {
+
+
+      hiveContext.hql(cmd).collect().foreach(println)
+
+      /*
       val hconf = conf.asInstanceOf[HiveConf]
       val proc: CommandProcessor = CommandProcessorFactory.get(tokens(0), hconf)
       if (proc != null) {
@@ -378,6 +384,7 @@ class SharkCliDriver(reloadRdds: Boolean = true) extends CliDriver with LogHelpe
           ret = proc.run(cmd_1).getResponseCode()
         }
       }
+      */
     }
     ret
   }

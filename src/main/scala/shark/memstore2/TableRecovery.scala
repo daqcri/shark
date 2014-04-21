@@ -45,7 +45,7 @@ object TableRecovery extends LogHelper {
    */
   def reloadRdds(cmdRunner: String => Unit, console: Option[SessionState.LogHelper] = None) {
     // Filter for tables that should be reloaded into the cache.
-    val currentDbName = db.getCurrentDatabase()
+    val currentDbName = ""//db.getCurrentDatabase()
     for (databaseName <- db.getAllDatabases(); tableName <- db.getAllTables(databaseName)) {
       val hiveTable = db.getTable(databaseName, tableName)
       val tblProps = hiveTable.getParameters
@@ -61,6 +61,6 @@ object TableRecovery extends LogHelper {
         cmdRunner(cmd)
       }
     }
-    db.setCurrentDatabase(currentDbName)
+    //db.setCurrentDatabase(currentDbName)
   }
 }

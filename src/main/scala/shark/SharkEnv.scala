@@ -35,21 +35,12 @@ import shark.tachyon.TachyonUtilImpl
 object SharkEnv extends LogHelper {
 
   def init(): SharkContext = {
-    if (sc == null) {
-      val jobName = "Shark::" + java.net.InetAddress.getLocalHost.getHostName
-      val master = System.getenv("MASTER")
-      initWithSharkContext(jobName, master)
-    }
-    sc
+    null.asInstanceOf[SharkContext]
   }
 
   def fixUncompatibleConf(conf: Configuration) {
-    if (sc == null) {
-      init()
-    }
-
     val hiveIslocal = ShimLoader.getHadoopShims.isLocalMode(conf)
-    if (!sc.isLocal && hiveIslocal) {
+    if (hiveIslocal) {
       val warnMessage = "Hive Hadoop shims detected local mode, but Shark is not running locally."
       logWarning(warnMessage)
 

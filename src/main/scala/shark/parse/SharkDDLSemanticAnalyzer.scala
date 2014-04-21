@@ -75,7 +75,7 @@ class SharkDDLSemanticAnalyzer(conf: HiveConf) extends DDLSemanticAnalyzer(conf)
    *   metastore.
    */
   def analyzeAlterTableProperties(ast: ASTNode) {
-    val databaseName = db.getCurrentDatabase()
+    val databaseName = ""
     val tableName = getTableName(ast)
     val hiveTable = db.getTable(databaseName, tableName)
     val newTblProps = getAlterTblDesc().getProps
@@ -117,7 +117,7 @@ class SharkDDLSemanticAnalyzer(conf: HiveConf) extends DDLSemanticAnalyzer(conf)
   }
 
   def analyzeDropTableOrDropParts(ast: ASTNode) {
-    val databaseName = db.getCurrentDatabase()
+    val databaseName = ""
     val tableName = getTableName(ast)
     val hiveTableOpt = Option(db.getTable(databaseName, tableName, false /* throwException */))
     // `hiveTableOpt` can be NONE for a DROP TABLE IF EXISTS command on a nonexistent table.
@@ -139,7 +139,7 @@ class SharkDDLSemanticAnalyzer(conf: HiveConf) extends DDLSemanticAnalyzer(conf)
   }
 
   def analyzeAlterTableAddParts(ast: ASTNode) {
-    val databaseName = db.getCurrentDatabase()
+    val databaseName = ""
     val tableName = getTableName(ast)
     val hiveTable = db.getTable(databaseName, tableName)
     val cacheMode = CacheType.fromString(
@@ -158,7 +158,7 @@ class SharkDDLSemanticAnalyzer(conf: HiveConf) extends DDLSemanticAnalyzer(conf)
   }
 
   private def analyzeAlterTableRename(astNode: ASTNode) {
-    val databaseName = db.getCurrentDatabase()
+    val databaseName = ""
     val oldTableName = getTableName(astNode)
     val hiveTable = db.getTable(databaseName, oldTableName)
     val cacheMode = CacheType.fromString(hiveTable.getProperty(SharkTblProperties.CACHE_FLAG.varname))

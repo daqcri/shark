@@ -39,8 +39,7 @@ class SharkExplainWork(
   rootTasks: JList[Task[_ <: java.io.Serializable]],
   astStringTree: String,
   inputs: JHashSet[ReadEntity],
-  extended: Boolean)
- extends ExplainWork(resFile, rootTasks, astStringTree, inputs, extended, false, false)
+  extended: Boolean) extends Serializable
 
 
 /**
@@ -51,49 +50,7 @@ class SharkExplainTask extends Task[SharkExplainWork] with java.io.Serializable 
   val hiveExplainTask = new ExplainTask
 
   override def execute(driverContext: DriverContext): Int = {
-    logDebug("Executing " + this.getClass.getName())
-    hiveExplainTask.setWork(work)
-
-    try {
-      val resFile = new Path(work.getResFile())
-      val outS = resFile.getFileSystem(conf).create(resFile)
-      val out = new PrintStream(outS)
-
-      // Print out the parse AST
-      ExplainTask.outputAST(work.getAstStringTree, out, false, 0)
-      out.println()
-
-      ExplainTask.outputDependencies(out, work.isFormatted(), work.getRootTasks, 0)
-      out.println()
-
-      // Go over all the tasks and dump out the plans
-      ExplainTask.outputStagePlans(out, work, work.getRootTasks, 0)
-
-      // Print the Shark query plan if applicable.
-      if (work != null && work.getRootTasks != null && work.getRootTasks.size > 0) {
-        work.getRootTasks.zipWithIndex.foreach { case(task, taskIndex) =>
-          task match {
-            case sparkTask: SparkTask => {
-              out.println("SHARK QUERY PLAN #%d:".format(taskIndex))
-              val terminalOp = sparkTask.getWork().terminalOperator
-              ExplainTaskHelper.outputPlan(terminalOp, out, work.getExtended, 2)
-              out.println()
-            }
-            case _ => null
-          }
-        }
-      }
-
-      out.close()
-      0
-    } catch {
-      case e: Exception => {
-        console.printError("Failed with exception " + e.getMessage(), "\n" +
-            StringUtils.stringifyException(e))
-        throw e
-        1
-      }
-    }
+    0
   }
 
   override def initialize(conf: HiveConf, queryPlan: QueryPlan, driverContext: DriverContext) {
@@ -105,7 +62,7 @@ class SharkExplainTask extends Task[SharkExplainWork] with java.io.Serializable 
 
   override def getName = hiveExplainTask.getName
 
-  override def localizeMRTmpFilesImpl(ctx: Context) {
+  def localizeMRTmpFilesImpl(ctx: Context) {
     // explain task has nothing to localize
     // we don't expect to enter this code path at all
     throw new RuntimeException ("Unexpected call")
