@@ -39,7 +39,7 @@ class SharkServerSuite extends FunSuite with BeforeAndAfterAll with ShouldMatche
     // Forking a new process to start the Shark server. The reason to do this is it is
     // hard to clean up Hive resources entirely, so we just start a new process and kill
     // that process for cleanup.
-    val defaultArgs = Seq("./bin/shark", "--service", "sharkserver",
+    val defaultArgs = Seq("./bin/shark", "--service", "sharkserver2",
       "--verbose",
       "-p",
       PORT,
