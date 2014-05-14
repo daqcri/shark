@@ -72,8 +72,9 @@ object SharkBuild extends Build {
   // Exclusion rules for Hive artifacts
   val excludeGuava = ExclusionRule(organization = "com.google.guava")
   val excludeLog4j = ExclusionRule(organization = "log4j")
-  val excludeServlet = ExclusionRule(organization = "javax.servlet")
+  val excludeServlet = ExclusionRule(organization = "org.mortbay.jetty")
   val excludeXerces = ExclusionRule(organization = "xerces")
+  val excludeHive = ExclusionRule(organization = "org.apache.hive")
 
   // TODO(harvey): These should really be in a SharkHive project, but that requires re-organizing
   //               all of our settings. Should be done for v0.9.1. Also, we might not need some
@@ -83,7 +84,7 @@ object SharkBuild extends Build {
     "hive-cli",
     "hive-common",
     "hive-exec",
-    "hive-hbase-handler",
+    //"hive-hbase-handler",
     "hive-hwi",
     "hive-jdbc",
     "hive-metastore",
@@ -91,16 +92,9 @@ object SharkBuild extends Build {
     "hive-service",
     "hive-shims")
   val hiveDependencies = hiveArtifacts.map ( artifactId =>
-    "org.apache.hive" % artifactId % "0.12.0" excludeAll(
-      excludeGuava, excludeLog4j, excludeServlet, excludeAsm, excludeNetty, excludeXerces)
+    "org.spark-project.hive" % artifactId % "0.12.0" excludeAll(
+      excludeGuava, excludeLog4j, excludeAsm, excludeNetty, excludeXerces, excludeServlet)
   )
-
-  val tachyonDependency = (if (TACHYON_ENABLED) {
-    Some("org.tachyonproject" % "tachyon" % TACHYON_VERSION excludeAll(
-      excludeKyro, excludeHadoop, excludeCurator, excludeJackson, excludeNetty, excludeAsm))
-  } else {
-    None
-  }).toSeq
 
   val yarnDependency = (if (YARN_ENABLED) {
     Some("org.apache.spark" %% "spark-yarn" % SPARK_VERSION)
@@ -122,11 +116,11 @@ object SharkBuild extends Build {
     // Download managed jars into lib_managed.
     retrieveManaged := true,
     resolvers ++= Seq(
-      "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
-      "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
-      "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
-      "Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2/",
-      "Sonatype Testing" at "https://oss.sonatype.org/content/repositories/eduberkeleycs-1016",
+      //"Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/",
+      //"Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
+      //"Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+      //"Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2/",
+      //"Sonatype Testing" at "https://oss.sonatype.org/content/repositories/eduberkeleycs-1016",
       "Local Maven" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
     ),
  
@@ -175,34 +169,11 @@ object SharkBuild extends Build {
     testListeners <<= target.map(
       t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
 
-    unmanagedSourceDirectories in Compile <+= baseDirectory { base =>
-      if (TACHYON_ENABLED) {
-        base / ("src/tachyon_enabled/scala")
-      } else {
-        base / ("src/tachyon_disabled/scala")
-      }
-    },
-
-    libraryDependencies ++= hiveDependencies ++ tachyonDependency ++ yarnDependency,
+    libraryDependencies ++= hiveDependencies ++ yarnDependency,
     libraryDependencies ++= Seq(
-      "org.apache.spark" %% "spark-hive" % SPARK_VERSION,
-      "org.apache.spark" %% "spark-repl" % SPARK_VERSION,
-      "com.google.guava" % "guava" % "14.0.1",
-      "org.apache.hadoop" % "hadoop-client" % hadoopVersion excludeAll(excludeJackson, excludeNetty, excludeAsm) force(),
-      // See https://code.google.com/p/guava-libraries/issues/detail?id=1095
-      "com.google.code.findbugs" % "jsr305" % "1.3.+",
-
-      // Hive unit test requirements. These are used by Hadoop to run the tests, but not necessary
-      // in usual Shark runs.
-      "commons-io" % "commons-io" % "2.1",
-      "commons-httpclient" % "commons-httpclient" % "3.1" % "test",
-
-      // Test infrastructure
-      "org.apache.hadoop" % "hadoop-test" % "0.20.2" % "test" excludeAll(excludeJackson, excludeNetty, excludeAsm) force(),
-      "org.scalatest" %% "scalatest" % "1.9.1" % "test",
-      "junit" % "junit" % "4.10" % "test",
-      "net.java.dev.jets3t" % "jets3t" % "0.7.1",
-      "com.novocode" % "junit-interface" % "0.8" % "test")
+      "org.apache.spark" %% "spark-hive" % SPARK_VERSION excludeAll(excludeHive),
+      "org.apache.spark" %% "spark-repl" % SPARK_VERSION excludeAll(excludeHive),
+      "com.google.guava" % "guava" % "14.0.1")
   ) ++ org.scalastyle.sbt.ScalastylePlugin.Settings
 
   def assemblyProjSettings = Seq(

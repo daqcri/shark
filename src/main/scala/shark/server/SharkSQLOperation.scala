@@ -1,12 +1,14 @@
 package shark.server
 
 import java.util.{Map => JMap}
+
 import org.apache.hadoop.hive.ql.parse.VariableSubstitution
 import org.apache.hadoop.hive.ql.processors.CommandProcessorResponse
 import org.apache.hive.service.cli.{HiveSQLException, OperationState, TableSchema}
 import org.apache.hive.service.cli.operation.SQLOperation
 import org.apache.hive.service.cli.session.HiveSession
-import shark.{SharkDriver, Utils}
+
+import shark.Utils
 
 class SharkSQLOperation(
     parentSession: HiveSession,
@@ -14,17 +16,19 @@ class SharkSQLOperation(
     confOverlay: JMap[String, String])
   extends SQLOperation(parentSession, statement, confOverlay, false) {
 
+  /*
   private val sdriver = {
     val d = new SharkDriver(getParentSession.getHiveConf)
     d.init()
     d
   }
+  */
 
   override def run() {
     setState(OperationState.RUNNING)
-    Utils.setSuperField("driver", sdriver, this)
+    //Utils.setSuperField("driver", sdriver, this)
     var response: Option[CommandProcessorResponse] = None
-    sdriver.setTryCount(Integer.MAX_VALUE) //maybe useless?
+    //sdriver.setTryCount(Integer.MAX_VALUE) //maybe useless?
     var subStatement = ""
     try {
       //duplicate: this is also done when Driver compiles command
@@ -36,7 +40,7 @@ class SharkSQLOperation(
       }
     }
 
-    response = Option(sdriver.run(subStatement))
+    //response = Option(sdriver.run(subStatement))
     response match {
       case Some(resp: CommandProcessorResponse) => {
         val code = resp.getResponseCode
@@ -52,7 +56,8 @@ class SharkSQLOperation(
       }
     }
 
-    val mResultSchema = sdriver.getSchema
+    /*
+    val mResultSchema: TableSchema = null//sdriver.getSchema
     Utils.setSuperField("mResultSchema", mResultSchema, this)
     if (mResultSchema != null && mResultSchema.isSetFieldSchemas) {
       val resultSchema = new TableSchema(mResultSchema)
@@ -61,7 +66,8 @@ class SharkSQLOperation(
     } else {
       setHasResultSet(false)
     }
+    */
     setState(OperationState.FINISHED)
   }
-
 }
+

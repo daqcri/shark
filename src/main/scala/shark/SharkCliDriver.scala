@@ -46,6 +46,7 @@ import org.apache.hadoop.io.IOUtils
 import org.apache.thrift.transport.TSocket
 
 
+/*
 import shark.memstore2.TableRecovery
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.hive.HiveContext
@@ -411,3 +412,4 @@ class SharkCliDriver(reloadRdds: Boolean = true) extends CliDriver with LogHelpe
     }
   }
 }
+*/

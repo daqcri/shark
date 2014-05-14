@@ -81,7 +81,9 @@ class SharkOperationManager extends OperationManager {
           println("DONEISH")
           setHasResultSet(true)
         } catch {
-          case e => println(e)
+          case e: Throwable =>
+            println(e)
+            e.getStackTrace.foreach(println)
         }
         println("DONE")
         setState(OperationState.FINISHED)

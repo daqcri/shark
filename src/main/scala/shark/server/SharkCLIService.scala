@@ -7,8 +7,8 @@ import org.apache.hive.service.auth.HiveAuthFactory
 import java.io.IOException
 import org.apache.hive.service.ServiceException
 import javax.security.auth.login.LoginException
-import org.apache.spark.SparkEnv
-import shark.{SharkServer, Utils}
+
+import shark.Utils
 
 class SharkCLIService extends CLIService {
   override def init(hiveConf: HiveConf) {
@@ -34,5 +34,3 @@ class SharkCLIService extends CLIService {
     }
   }
 }
-
-

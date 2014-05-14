@@ -41,7 +41,7 @@ object SharkServer2 extends LogHelper {
     Runtime.getRuntime.addShutdownHook(
       new Thread() {
         override def run() {
-          SharkEnv.stop()
+          sparkContext.stop()
         }
       }
     )
@@ -49,14 +49,12 @@ object SharkServer2 extends LogHelper {
 
   try {
     val hiveConf = new HiveConf
-    SharkConfVars.initializeWithDefaults(hiveConf)
-
     val server = new SharkServer2
     server.init(hiveConf)
     server.start()
     logInfo("SharkServer2 started")
   } catch {
-    case t: Throwable => {
+    case t: Exception => {
       LOG.fatal("Error starting SharkServer2", t)
       System.exit(-1)
     }
